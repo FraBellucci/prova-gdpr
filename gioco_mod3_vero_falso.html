@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>MOD3 – Vero o Falso: Dati e Diritti</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1b5e20,#2e7d32,#388e3c);min-height:100vh;overflow:hidden;display:flex;justify-content:center;align-items:center}
+.container{background:#fff;width:800px;height:550px;display:flex;flex-direction:column;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.header{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;padding:11px 18px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.header h1{font-size:15px;font-weight:700}.header p{font-size:11px;opacity:.8;margin-top:1px}
+button{padding:7px 13px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
+.btn-white{background:#fff;color:#1b5e20}.btn-white:hover{background:#e8f5e9}
+.btn-outline{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4)}.btn-outline:hover{background:rgba(255,255,255,.25)}
+.btn-group{display:flex;gap:8px}
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.hidden{display:none!important}
+.instr{padding:18px 24px;overflow-y:auto;flex:1}
+.instr h2{color:#1b5e20;font-size:16px;margin-bottom:10px}
+.instr p,.instr li{font-size:13px;line-height:1.6;color:#444;margin-bottom:5px}
+.instr ul{margin-left:18px;margin-bottom:10px}
+.how-grid{display:flex;gap:10px;margin:10px 0}
+.how-step{flex:1;background:#e8f5e9;border-radius:8px;padding:10px;text-align:center;font-size:12px;color:#1b5e20;font-weight:600;line-height:1.5}
+.how-step .num{font-size:22px;display:block;margin-bottom:4px}
+.start-btn{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;padding:11px 32px;font-size:14px;border-radius:8px;display:block;margin:14px auto 0;cursor:pointer;border:none;font-weight:600}
+.start-btn:hover{transform:translateY(-2px)}
+.game-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:0}
+.status-bar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:#f5f5f5;border-bottom:1px solid #e0e0e0;flex-shrink:0;font-size:12px}
+.q-badge{background:#2e7d32;color:#fff;border-radius:20px;padding:2px 12px;font-size:12px;font-weight:700}
+.prog-bar{flex:1;height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1b5e20,#4caf50);border-radius:3px;transition:width .4s}
+.score-lbl{font-weight:700;color:#1b5e20}
+.card-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 22px;gap:12px}
+.topic-tag{background:#e8f5e9;color:#1b5e20;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700}
+.statement-card{background:#fafafa;border:2px solid #c8e6c9;border-radius:12px;padding:16px 20px;width:100%;text-align:center;font-size:15px;color:#333;line-height:1.6;font-weight:500;min-height:85px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.statement-card.correct-card{border-color:#2e7d32;background:#e8f5e9}
+.statement-card.wrong-card{border-color:#c62828;background:#ffebee}
+.answer-row{display:flex;gap:20px;justify-content:center}
+.vf-btn{width:130px;height:52px;border-radius:10px;font-size:17px;font-weight:700;cursor:pointer;border:3px solid transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.vf-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.vf-btn:disabled{cursor:not-allowed;opacity:.6}
+.btn-vero{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20}
+.btn-vero:hover:not(:disabled){background:#c8e6c9}
+.btn-falso{background:#ffebee;border-color:#c62828;color:#b71c1c}
+.btn-falso:hover:not(:disabled){background:#ffcdd2}
+.btn-vero.sel-ok,.btn-falso.sel-ok{box-shadow:0 0 0 3px #2e7d32;transform:scale(1.05)}
+.btn-vero.sel-ko,.btn-falso.sel-ko{box-shadow:0 0 0 3px #c62828;opacity:.5}
+.feedback-area{background:#e3f2fd;border-left:4px solid #1565c0;border-radius:8px;padding:9px 14px;width:100%;font-size:12px;color:#0d47a1;line-height:1.5;display:none}
+.feedback-area.show{display:block}
+.next-row{display:flex;justify-content:flex-end;width:100%}
+.next-q-btn{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;padding:8px 22px;font-size:12px;border-radius:7px;cursor:pointer;border:none;font-weight:600;display:none}
+.next-q-btn.show{display:block}
+.result-page{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+.result-box{text-align:center;max-width:480px}
+.result-icon{font-size:55px;margin-bottom:12px}
+.result-box h2{font-size:20px;font-weight:700;color:#1b5e20;margin-bottom:8px}
+.result-box p{font-size:13px;color:#555;line-height:1.6;margin-bottom:15px}
+.result-score{background:#e8f5e9;border-radius:10px;padding:10px 20px;font-size:15px;font-weight:700;color:#1b5e20;margin-bottom:15px;display:inline-block}
+.result-btns{display:flex;gap:10px;justify-content:center}
+.btn-prim{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;padding:10px 24px;font-size:13px;border-radius:8px;cursor:pointer;border:none;font-weight:600}
+.btn-sec{background:#78909c;color:#fff;padding:10px 24px;font-size:13px;border-radius:8px;cursor:pointer;border:none;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div><h1>✅ Dati Speciali e Diritti: Vero o Falso?</h1><p>Modulo 3 – Categorie particolari di dati e diritti degli interessati</p></div>
+    <div class="btn-group">
+      <button class="btn-outline" onclick="resetGame()">🔄 Rigioca</button>
+      <button class="btn-white" onclick="window.close()">Torna al corso</button>
+    </div>
+  </div>
+  <div class="content">
+    <div id="instrPage" class="instr">
+      <h2>🎯 Come funziona</h2>
+      <p>Ti vengono presentate <strong>10 affermazioni</strong> su categorie particolari di dati e diritti degli interessati. Decidi se ciascuna è vera o falsa.</p>
+      <div class="how-grid">
+        <div class="how-step"><span class="num">📖</span>Leggi l'affermazione con attenzione</div>
+        <div class="how-step"><span class="num">✅❌</span>Clicca VERO o FALSO</div>
+        <div class="how-step"><span class="num">💡</span>Leggi la spiegazione e vai avanti</div>
+      </div>
+      <ul><li>Le affermazioni riguardano: dati sanitari, origine etnica, opinioni politiche, diritti di accesso, cancellazione e portabilità</li><li>Alcune affermazioni contengono errori sottili — leggi con attenzione</li></ul>
+      <button class="start-btn" onclick="startGame()">▶ Inizia</button>
+    </div>
+    <div id="gamePage" class="game-wrap hidden">
+      <div class="status-bar">
+        <span class="q-badge">Domanda <span id="qNum">1</span>/10</span>
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <span class="score-lbl">Corrette: <span id="scoreNum">0</span></span>
+      </div>
+      <div class="card-area">
+        <div class="topic-tag" id="topicTag"></div>
+        <div class="statement-card" id="statCard"></div>
+        <div class="answer-row">
+          <button class="vf-btn btn-vero" id="btnVero" onclick="answer(true)">✓ VERO</button>
+          <button class="vf-btn btn-falso" id="btnFalso" onclick="answer(false)">✗ FALSO</button>
+        </div>
+        <div class="feedback-area" id="feedbackArea"></div>
+        <div class="next-row"><button class="next-q-btn" id="nextQBtn" onclick="nextQ()">Domanda successiva →</button></div>
+      </div>
+    </div>
+    <div id="resultPage" class="result-page hidden">
+      <div class="result-box">
+        <div class="result-icon" id="resultIcon"></div>
+        <h2 id="resultTitle"></h2><p id="resultText"></p>
+        <div class="result-score" id="resultScore"></div>
+        <div class="result-btns">
+          <button class="btn-prim" onclick="resetGame()">🔄 Rigioca</button>
+          <button class="btn-sec" onclick="window.close()">Torna al corso</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const QUESTIONS=[
+  {tag:'🏥 Dati sanitari',statement:'I dati sulla salute rientrano nelle categorie particolari di dati e richiedono una base giuridica rafforzata rispetto ai dati personali comuni.',correct:true,feedback:'VERO. I dati sanitari sono una categoria particolarmente sensibile: oltre alla base giuridica ordinaria, serve una condizione aggiuntiva prevista dall\'Art. 9 GDPR, come il consenso esplicito o la necessità per finalità mediche.'},
+  {tag:'👤 Diritto di accesso',statement:'L\'interessato può chiedere una copia dei propri dati, ma il Titolare ha 60 giorni per rispondere.',correct:false,feedback:'FALSO. Il termine per rispondere a una richiesta di accesso è 30 giorni, non 60. In casi di particolare complessità il termine può essere esteso di altri 60 giorni, ma l\'interessato va informato entro i primi 30.'},
+  {tag:'🧬 Dati genetici',statement:'I dati genetici, come i risultati di un test del DNA, sono una categoria particolare di dati personali.',correct:true,feedback:'VERO. I dati genetici rientrano esplicitamente tra le categorie particolari dell\'Art. 9 GDPR. Richiedono misure di protezione rafforzate e non possono essere trattati senza una delle condizioni previste dall\'articolo.'},
+  {tag:'🗑️ Diritto alla cancellazione',statement:'Il diritto alla cancellazione è assoluto: il Titolare deve sempre cancellare i dati quando l\'interessato lo richiede.',correct:false,feedback:'FALSO. Il diritto alla cancellazione (o "diritto all\'oblio") non è assoluto. Può essere escluso quando il trattamento è necessario per adempiere a un obbligo legale, per ragioni di interesse pubblico, per archiviazione o per esercitare o difendere diritti in sede giudiziale.'},
+  {tag:'🌍 Origine etnica',statement:'I dati sull\'origine razziale o etnica di un dipendente non possono mai essere trattati dall\'azienda.',correct:false,feedback:'FALSO. Possono essere trattati in presenza di una delle condizioni dell\'Art. 9, ad esempio per adempiere obblighi in materia di diritto del lavoro (es. gestione di permessi per festività religiose) o con il consenso esplicito dell\'interessato.'},
+  {tag:'📦 Portabilità',statement:'Il diritto alla portabilità dei dati si applica solo ai dati trattati con il consenso o per l\'esecuzione di un contratto, e solo se il trattamento è automatizzato.',correct:true,feedback:'VERO. La portabilità (Art. 20) si applica specificamente quando il trattamento si basa sul consenso o sull\'esecuzione di un contratto, e solo se il trattamento avviene con mezzi automatizzati. Non si applica ai trattamenti su base legale diversa o cartacei.'},
+  {tag:'✏️ Diritto di rettifica',statement:'L\'interessato può richiedere la correzione di dati personali inesatti. Il Titolare deve informarlo dell\'esito della richiesta.',correct:true,feedback:'VERO. Il diritto di rettifica (Art. 16) consente all\'interessato di far correggere dati errati o incompleti. Il Titolare è tenuto a informare l\'interessato delle azioni intraprese entro 30 giorni dalla richiesta.'},
+  {tag:'💬 Opinioni politiche',statement:'Raccogliere informazioni sulle opinioni politiche dei dipendenti è vietato in qualsiasi circostanza.',correct:false,feedback:'FALSO. Le opinioni politiche sono una categoria particolare, ma possono essere trattate in specifiche circostanze previste dall\'Art. 9, ad esempio da organizzazioni politiche con finalità legate alla loro attività istituzionale, o con il consenso esplicito dell\'interessato.'},
+  {tag:'🚫 Diritto di opposizione',statement:'L\'interessato può opporsi al trattamento dei propri dati per finalità di marketing diretto in qualsiasi momento, senza dover fornire motivazioni.',correct:true,feedback:'VERO. Per il marketing diretto l\'opposizione è incondizionata: l\'interessato non deve fornire nessuna motivazione e il Titolare deve cessare immediatamente il trattamento per quella finalità.'},
+  {tag:'🧠 Dati biometrici',statement:'Un sistema di rilevazione presenze tramite impronta digitale tratta dati biometrici, che sono una categoria particolari ai sensi del GDPR.',correct:true,feedback:'VERO. I dati biometrici che permettono l\'identificazione univoca di una persona fisica rientrano nelle categorie particolari. L\'uso dell\'impronta digitale per la rilevazione presenze richiede quindi una condizione aggiuntiva dell\'Art. 9, di norma il consenso esplicito del lavoratore.'},
+];
+let cur=0,score=0,shuffled=[];
+function startGame(){cur=0;score=0;shuffled=[...QUESTIONS].sort(()=>Math.random()-.5);document.getElementById('scoreNum').textContent='0';loadQ();showPage('gamePage');}
+function loadQ(){if(cur>=QUESTIONS.length){endGame();return;}const q=shuffled[cur];document.getElementById('qNum').textContent=cur+1;document.getElementById('progFill').style.width=((cur/QUESTIONS.length)*100)+'%';document.getElementById('topicTag').textContent=q.tag;document.getElementById('statCard').textContent=q.statement;document.getElementById('statCard').className='statement-card';document.getElementById('feedbackArea').className='feedback-area';document.getElementById('nextQBtn').className='next-q-btn';document.getElementById('btnVero').disabled=false;document.getElementById('btnFalso').disabled=false;document.getElementById('btnVero').className='vf-btn btn-vero';document.getElementById('btnFalso').className='vf-btn btn-falso';}
+function answer(val){const q=shuffled[cur];const isCorrect=(val===q.correct);document.getElementById('btnVero').disabled=true;document.getElementById('btnFalso').disabled=true;if(isCorrect){score++;document.getElementById('scoreNum').textContent=score;document.getElementById('statCard').classList.add('correct-card');if(val)document.getElementById('btnVero').className='vf-btn btn-vero sel-ok';else document.getElementById('btnFalso').className='vf-btn btn-falso sel-ok';}else{document.getElementById('statCard').classList.add('wrong-card');if(val)document.getElementById('btnVero').className='vf-btn btn-vero sel-ko';else document.getElementById('btnFalso').className='vf-btn btn-falso sel-ko';}const fb=document.getElementById('feedbackArea');fb.innerHTML='<b>'+(isCorrect?'✓ Corretto!':'✗ Non corretto.')+'</b> '+q.feedback;fb.classList.add('show');document.getElementById('nextQBtn').classList.add('show');}
+function nextQ(){cur++;loadQ();}
+function endGame(){const pct=Math.round((score/QUESTIONS.length)*100);document.getElementById('resultIcon').textContent=pct>=80?'🎉':pct>=60?'👍':'💪';document.getElementById('resultTitle').textContent=pct>=80?'Ottima conoscenza!':pct>=60?'Buona base!':'Riprova!';document.getElementById('resultText').textContent='I dati appartenenti a categorie particolari richiedono sempre un livello di attenzione superiore. Ricorda: base giuridica rafforzata, misure di sicurezza adeguate, risposte alle richieste degli interessati entro 30 giorni.';document.getElementById('resultScore').textContent='Corrette: '+score+'/'+QUESTIONS.length;showPage('resultPage');}
+function resetGame(){showPage('instrPage');}
+function showPage(id){['instrPage','gamePage','resultPage'].forEach(p=>document.getElementById(p).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+</script>
+</body>
+</html>
